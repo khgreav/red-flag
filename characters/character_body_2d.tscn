@@ -1,0 +1,155 @@
+[gd_scene load_steps=17 format=3 uid="uid://gq8qqe8s75yo"]
+
+[ext_resource type="Script" path="res://characters/character_body_2d.gd" id="1_e5si4"]
+[ext_resource type="Texture2D" uid="uid://bcysfbh75iknt" path="res://assets/sprites/player_character_sprite_grid.png" id="2_1g64n"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ltvs5"]
+radius = 6.6
+height = 26.8
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vs2wg"]
+animation = &"walk_down"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_a18pg"]
+animation = &"walk_up"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uds3d"]
+animation = &"walk_right"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_nkvb1"]
+animation = &"walk_left"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_vyyxe"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_vs2wg")
+blend_point_0/pos = Vector2(0, 1.1)
+blend_point_1/node = SubResource("AnimationNodeAnimation_a18pg")
+blend_point_1/pos = Vector2(0, -1.1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_uds3d")
+blend_point_2/pos = Vector2(1, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_nkvb1")
+blend_point_3/pos = Vector2(-1, 0)
+min_space = Vector2(-1, -1.1)
+max_space = Vector2(1, 1.1)
+blend_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_euyq0"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_2c1em"]
+states/End/position = Vector2(547, 87)
+states/Start/position = Vector2(116, 87)
+states/Walk/node = SubResource("AnimationNodeBlendSpace2D_vyyxe")
+states/Walk/position = Vector2(325, 87)
+transitions = ["Start", "Walk", SubResource("AnimationNodeStateMachineTransition_euyq0")]
+
+[sub_resource type="Animation" id="Animation_h7yqr"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_lvto1"]
+resource_name = "walk_down"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_3hn3v"]
+resource_name = "walk_left"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+
+[sub_resource type="Animation" id="Animation_plunt"]
+resource_name = "walk_right"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+
+[sub_resource type="Animation" id="Animation_kwd40"]
+resource_name = "walk_up"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_y0ws8"]
+_data = {
+"RESET": SubResource("Animation_h7yqr"),
+"walk_down": SubResource("Animation_lvto1"),
+"walk_left": SubResource("Animation_3hn3v"),
+"walk_right": SubResource("Animation_plunt"),
+"walk_up": SubResource("Animation_kwd40")
+}
+
+[node name="Player [CharacterBody2D]" type="CharacterBody2D"]
+scale = Vector2(10, 10)
+collision_mask = 4
+script = ExtResource("1_e5si4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_1g64n")
+hframes = 2
+vframes = 2
+frame = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_ltvs5")
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeStateMachine_2c1em")
+anim_player = NodePath("../AnimationPlayer")
+advance_expression_base_node = NodePath("")
+active = true
+parameters/Walk/blend_position = Vector2(0, -0.1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_y0ws8")
+}
